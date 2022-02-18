@@ -1,3 +1,4 @@
+require("../globals/global_functions");
 require('dotenv').config();
 //--------DB Conectivity-----------
 require('./db/mongoose');
@@ -22,11 +23,11 @@ const whitelist = ['http://example1.com', 'http://127.0.0.1:3000']
 const corsOptions = {
     credentials: true,
     origin: ((origin, callback) => {
-        if (whitelist.indexOf(origin) !== -1) {
+        if (!origin || whitelist.indexOf(origin) !== -1) {
             callback(null, true)
-          } else {
+        } else {
             callback(new Error('Not allowed by CORS'))
-          }
+        }
     }),
     methods: ['GET, POST, PUT, PATCH, DELETE']
 }

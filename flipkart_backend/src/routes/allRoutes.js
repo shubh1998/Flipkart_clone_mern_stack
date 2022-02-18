@@ -1,5 +1,5 @@
-const user_routes = require("./User/userRoutes");
+const auth_routes = require("./Auth/authRoutes");
 
 module.exports = [
-    user_routes
+    auth_routes
 ]
