@@ -39,3 +39,11 @@ okResponse = function(res, data, message) {
 createdResponse = function(res, data, message) {
   return successResponse(res, 201, data, message);
 };
+
+//-----The 401 Unauthorized error-----------
+unauthorizedError = function(msg) {
+  return Object.assign(new Error(), {
+    statusCode: 401,
+    message: msg
+  });
+};

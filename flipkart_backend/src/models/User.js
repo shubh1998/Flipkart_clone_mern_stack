@@ -1,20 +1,21 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt")
+const jwt = require("jsonwebtoken")
 
 const userSchema = new mongoose.Schema({
     firstname: {
         type: String,
         required: true,
         trim: true,
-        min: 3,
-        max: 20
+        minlength: 3,
+        maxlength: 20,
     },
     lastname: {
         type: String,
         required: true,
         trim: true,
-        min: 3,
-        max: 20
+        minlength: 3,
+        maxlength: 20
     },
     username: {
         type: String,
@@ -31,9 +32,17 @@ const userSchema = new mongoose.Schema({
         unique: true,
         lowercase: true
     },
-    hash_password: {
+    password: {
         type: String,
-        required: true
+        required: true,
+        minlength: 7,
+        maxlength: 100,
+        trim: true,
+        validate(value) {
+            if (value.toLowerCase().includes('password')) {
+                throw new Error('Password cannot contain "password"')
+            }
+        }
     },
     role: {
         type: String,
@@ -43,22 +52,55 @@ const userSchema = new mongoose.Schema({
     contact_number: {
         type: String,
         required: true,
-        min: 10,
-        max: 16
+        minlength: 10,
+        maxlength: 16
     },
     profile_picture: {
+        type: String
+    },
+    auth_token: {
         type: String
     }
 }, { timestamps: true })
 
-userSchema.virtual('password').set(function (password) {
-    this.hash_password = bcrypt.hashSync(password, 10)
+//Created virtual key
+userSchema.virtual('fullname').get(function () {
+    return `${this.firstname} ${this.lastname} `
 })
 
+//Hash the passsword before saving
+userSchema.pre('save', async function (next) {
+    const user = this
+    if (user.isModified('password')) {
+        user.password = await bcrypt.hash(user.password, 10)
+    }
+    next()
+})
+
+//Created static methods
 userSchema.methods = {
+
     authenticate: function (password) {
-        return bcrypt.compareSync(password, this.hash_password) // either return "true or "false
+        const user = this
+        return bcrypt.compare(password, user.password)  // either return "true or "false
+    },
+    generateAuthToken: async function () {
+        const user = this;
+        const payload = {
+            _id: user._id.toString(),
+            firstname: user.firstname,
+            lastname: user.lastname,
+            username: user.username,
+            email: user.email,
+            role: 'user'
+        }
+        const authToken = await jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1d' });
+        user.auth_token = authToken
+        await user.save();
+        return authToken;
     }
 }
 
-module.exports = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema);
+
+module.exports = User;
