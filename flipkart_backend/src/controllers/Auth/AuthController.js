@@ -1,9 +1,11 @@
+const {isEmail} = require("validator")
 const User = require("../../models/User")
 
 const signInUser = async (req, res) => {
     const { email, password } = req.body
 
     if (!email) return badRequestError(res, "email is required !")
+    if(!isEmail(email)) return badRequestError(res, "please enter valid email address !")
     if (!password) return badRequestError(res, "password is required !")
     if (password.length < 7 || password.length > 32) return badRequestError(res, "password should be greater than 7 digits and less than 32 digits !")
 
@@ -47,6 +49,7 @@ const signUpUser = async (req, res) => {
     if (!firstname) return badRequestError(res, "firstname is required !")
     if (!lastname) return badRequestError(res, "lastname is required !")
     if (!email) return badRequestError(res, "email is required !")
+    if(!isEmail(email)) return badRequestError(res, "please enter valid email address !")
     if (!password) return badRequestError(res, "password is required !")
     if (password.length < 7 || password.length > 32) return badRequestError(res, "password should be greater than 7 digits and less than 32 digits !")
     if (contact_number.length < 10 || contact_number.length > 16) return badRequestError(res, "contact_number should be greater than 10 digits and less than 16 digits !")
@@ -69,6 +72,7 @@ const signInAdmin = async (req, res) => {
     const { email, password } = req.body
 
     if (!email) return badRequestError(res, "email is required !")
+    if(!isEmail(email)) return badRequestError(res, "please enter valid email address !")
     if (!password) return badRequestError(res, "password is required !")
     if (password.length < 7 || password.length > 32) return badRequestError(res, "password should be greater than 7 digits and less than 32 digits !")
 
@@ -112,6 +116,7 @@ const signUpAdmin = async (req, res) => {
     if (!firstname) return badRequestError(res, "firstname is required !")
     if (!lastname) return badRequestError(res, "lastname is required !")
     if (!email) return badRequestError(res, "email is required !")
+    if(!isEmail(email)) return badRequestError(res, "please enter valid email address !")
     if (!password) return badRequestError(res, "password is required !")
     if (password.length < 7 || password.length > 32) return badRequestError(res, "password should be greater than 7 digits and less than 32 digits !")
     if (contact_number.length < 10 || contact_number.length > 16) return badRequestError(res, "contact_number should be greater than 10 digits and less than 16 digits !")

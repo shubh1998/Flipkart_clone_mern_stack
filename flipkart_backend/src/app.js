@@ -7,15 +7,14 @@ require('./db/mongoose');
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const bodyParser = require("body-parser");
 const morgan = require("morgan");
 
 const PORT = process.env.PORT || 5000;
 //---------Assign all routes to a single variable-------------------
 const apiRoutes = require("./routes/allRoutes");
 
-app.use(bodyParser.json())
-    .use(bodyParser.urlencoded({ extended: false }))
+app.use(express.json())
+    .use(express.urlencoded({ extended: false }))
     .use(morgan("dev"))
 
 //CORS Configuration
